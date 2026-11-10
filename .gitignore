@@ -1,0 +1,34 @@
+target/
+
+# Local datasets and generated conversion output
+/test-data/
+/*_RECORDS.csv
+/test-output/
+
+# Python helper/test bytecode
+__pycache__/
+*.pyc
+
+# Local credentials, secrets, and environment files
+.env
+.env.*
+.aws/
+credentials
+.mylogin.cnf
+.my.cnf
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+
+# Datasets and generated artifacts, including files outside target/
+*.csv
+*.CSV
+*.jar
+*.class
+*.war
+*.log
+/output.json
+

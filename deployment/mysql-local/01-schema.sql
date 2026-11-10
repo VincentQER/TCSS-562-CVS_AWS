@@ -1,0 +1,96 @@
+-- Local MySQL 8.4 integration fixture ONLY. Review before manual execution.
+-- Use the mysql client in batch mode without --force: abort on the first error.
+-- Deliberately no IF NOT EXISTS, DROP, REPLACE, global settings or business-key uniqueness.
+CREATE DATABASE `tlq_load_it`
+  CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_bin;
+
+CREATE TABLE `tlq_load_it`.`payments_raw` (
+  `test_row_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `run_id` VARCHAR(128) NOT NULL,
+  `changeType` LONGTEXT NOT NULL,
+  `coveredRecipientType` LONGTEXT NOT NULL,
+  `teachingHospitalCcn` LONGTEXT NOT NULL,
+  `teachingHospitalId` LONGTEXT NOT NULL,
+  `teachingHospitalName` LONGTEXT NOT NULL,
+  `physicianProfileId` LONGTEXT NOT NULL,
+  `physicianFirstName` LONGTEXT NOT NULL,
+  `physicianMiddleName` LONGTEXT NOT NULL,
+  `physicianLastName` LONGTEXT NOT NULL,
+  `physicianNameSuffix` LONGTEXT NOT NULL,
+  `recipientPrimaryBusinessStreetAddressLine1` LONGTEXT NOT NULL,
+  `recipientPrimaryBusinessStreetAddressLine2` LONGTEXT NOT NULL,
+  `recipientCity` LONGTEXT NOT NULL,
+  `recipientState` LONGTEXT NOT NULL,
+  `recipientZipCode` LONGTEXT NOT NULL,
+  `recipientCountry` LONGTEXT NOT NULL,
+  `recipientProvince` LONGTEXT NOT NULL,
+  `recipientPostalCode` LONGTEXT NOT NULL,
+  `physicianPrimaryType` LONGTEXT NOT NULL,
+  `physicianSpecialty` LONGTEXT NOT NULL,
+  `physicianLicenseStateCode1` LONGTEXT NOT NULL,
+  `physicianLicenseStateCode2` LONGTEXT NOT NULL,
+  `physicianLicenseStateCode3` LONGTEXT NOT NULL,
+  `physicianLicenseStateCode4` LONGTEXT NOT NULL,
+  `physicianLicenseStateCode5` LONGTEXT NOT NULL,
+  `submittingApplicableManufacturerOrApplicableGpoName` LONGTEXT NOT NULL,
+  `applicableManufacturerOrApplicableGpoMakingPaymentId` LONGTEXT NOT NULL,
+  `applicableManufacturerOrApplicableGpoMakingPaymentName` LONGTEXT NOT NULL,
+  `applicableManufacturerOrApplicableGpoMakingPaymentState` LONGTEXT NOT NULL,
+  `applicableManufacturerOrApplicableGpoMakingPaymentCountry` LONGTEXT NOT NULL,
+  `totalAmountOfPaymentUsdollars` LONGTEXT NOT NULL,
+  `dateOfPayment` LONGTEXT NOT NULL,
+  `numberOfPaymentsIncludedInTotalAmount` LONGTEXT NOT NULL,
+  `formOfPaymentOrTransferOfValue` LONGTEXT NOT NULL,
+  `natureOfPaymentOrTransferOfValue` LONGTEXT NOT NULL,
+  `cityOfTravel` LONGTEXT NOT NULL,
+  `stateOfTravel` LONGTEXT NOT NULL,
+  `countryOfTravel` LONGTEXT NOT NULL,
+  `physicianOwnershipIndicator` LONGTEXT NOT NULL,
+  `thirdPartyPaymentRecipientIndicator` LONGTEXT NOT NULL,
+  `nameOfThirdPartyEntityReceivingPaymentOrTransferOfValue` LONGTEXT NOT NULL,
+  `charityIndicator` LONGTEXT NOT NULL,
+  `thirdPartyEqualsCoveredRecipientIndicator` LONGTEXT NOT NULL,
+  `contextualInformation` LONGTEXT NOT NULL,
+  `delayInPublicationIndicator` LONGTEXT NOT NULL,
+  `recordId` LONGTEXT NOT NULL,
+  `disputeStatusForPublication` LONGTEXT NOT NULL,
+  `relatedProductIndicator` LONGTEXT NOT NULL,
+  `coveredOrNoncoveredIndicator1` LONGTEXT NOT NULL,
+  `indicateDrugOrBiologicalOrDeviceOrMedicalSupply1` LONGTEXT NOT NULL,
+  `productCategoryOrTherapeuticArea1` LONGTEXT NOT NULL,
+  `nameOfDrugOrBiologicalOrDeviceOrMedicalSupply1` LONGTEXT NOT NULL,
+  `associatedDrugOrBiologicalNdc1` LONGTEXT NOT NULL,
+  `coveredOrNoncoveredIndicator2` LONGTEXT NOT NULL,
+  `indicateDrugOrBiologicalOrDeviceOrMedicalSupply2` LONGTEXT NOT NULL,
+  `productCategoryOrTherapeuticArea2` LONGTEXT NOT NULL,
+  `nameOfDrugOrBiologicalOrDeviceOrMedicalSupply2` LONGTEXT NOT NULL,
+  `associatedDrugOrBiologicalNdc2` LONGTEXT NOT NULL,
+  `coveredOrNoncoveredIndicator3` LONGTEXT NOT NULL,
+  `indicateDrugOrBiologicalOrDeviceOrMedicalSupply3` LONGTEXT NOT NULL,
+  `productCategoryOrTherapeuticArea3` LONGTEXT NOT NULL,
+  `nameOfDrugOrBiologicalOrDeviceOrMedicalSupply3` LONGTEXT NOT NULL,
+  `associatedDrugOrBiologicalNdc3` LONGTEXT NOT NULL,
+  `coveredOrNoncoveredIndicator4` LONGTEXT NOT NULL,
+  `indicateDrugOrBiologicalOrDeviceOrMedicalSupply4` LONGTEXT NOT NULL,
+  `productCategoryOrTherapeuticArea4` LONGTEXT NOT NULL,
+  `nameOfDrugOrBiologicalOrDeviceOrMedicalSupply4` LONGTEXT NOT NULL,
+  `associatedDrugOrBiologicalNdc4` LONGTEXT NOT NULL,
+  `coveredOrNoncoveredIndicator5` LONGTEXT NOT NULL,
+  `indicateDrugOrBiologicalOrDeviceOrMedicalSupply5` LONGTEXT NOT NULL,
+  `productCategoryOrTherapeuticArea5` LONGTEXT NOT NULL,
+  `nameOfDrugOrBiologicalOrDeviceOrMedicalSupply5` LONGTEXT NOT NULL,
+  `associatedDrugOrBiologicalNdc5` LONGTEXT NOT NULL,
+  `programYear` LONGTEXT NOT NULL,
+  `paymentPublicationDate` LONGTEXT NOT NULL,
+  PRIMARY KEY (`test_row_id`),
+  KEY `ix_test_run_id` (`run_id`)
+) ENGINE=InnoDB ROW_FORMAT=DYNAMIC;
+
+CREATE TABLE `tlq_load_it`.`payments_rollback`
+  LIKE `tlq_load_it`.`payments_raw`;
+
+-- Failure injection only: submit a valid first row, then a second row with this marker.
+-- No such constraint exists on payments_raw. This is not a payment validation rule.
+ALTER TABLE `tlq_load_it`.`payments_rollback`
+  ADD CONSTRAINT `ck_it_forced_failure`
+  CHECK (`changeType` <> '__TLQ_IT_FORCE_FAIL__');

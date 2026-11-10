@@ -1,0 +1,108 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "DeployOnlyTransform",
+      "Effect": "Allow",
+      "Action": [
+        "lambda:CreateFunction",
+        "lambda:UpdateFunctionCode",
+        "lambda:UpdateFunctionConfiguration",
+        "lambda:GetFunction",
+        "lambda:GetFunctionConfiguration",
+        "lambda:GetFunctionUrlConfig"
+      ],
+      "Resource": "arn:aws:lambda:us-west-2:803964124311:function:tcss562-sync-transform"
+    },
+    {
+      "Sid": "ConfigureIamAuthenticatedUrl",
+      "Effect": "Allow",
+      "Action": [
+        "lambda:CreateFunctionUrlConfig",
+        "lambda:UpdateFunctionUrlConfig"
+      ],
+      "Resource": "arn:aws:lambda:us-west-2:803964124311:function:tcss562-sync-transform",
+      "Condition": {
+        "StringEquals": {
+          "lambda:FunctionUrlAuthType": "AWS_IAM"
+        }
+      }
+    },
+    {
+      "Sid": "InvokeIamUrl",
+      "Effect": "Allow",
+      "Action": "lambda:InvokeFunctionUrl",
+      "Resource": "arn:aws:lambda:us-west-2:803964124311:function:tcss562-sync-transform",
+      "Condition": {
+        "StringEquals": {
+          "lambda:FunctionUrlAuthType": "AWS_IAM"
+        }
+      }
+    },
+    {
+      "Sid": "InvokeOnlyViaUrl",
+      "Effect": "Allow",
+      "Action": "lambda:InvokeFunction",
+      "Resource": "arn:aws:lambda:us-west-2:803964124311:function:tcss562-sync-transform",
+      "Condition": {
+        "Bool": {
+          "lambda:InvokedViaFunctionUrl": "true"
+        }
+      }
+    },
+    {
+      "Sid": "InspectOnlyExecutionRole",
+      "Effect": "Allow",
+      "Action": [
+        "iam:GetRole",
+        "iam:ListRolePolicies",
+        "iam:GetRolePolicy",
+        "iam:ListAttachedRolePolicies"
+      ],
+      "Resource": "arn:aws:iam::803964124311:role/tcss562-transform-exec"
+    },
+    {
+      "Sid": "PassOnlyExecutionRoleToLambda",
+      "Effect": "Allow",
+      "Action": "iam:PassRole",
+      "Resource": "arn:aws:iam::803964124311:role/tcss562-transform-exec",
+      "Condition": {
+        "StringEquals": {
+          "iam:PassedToService": "lambda.amazonaws.com"
+        }
+      }
+    },
+    {
+      "Sid": "CreateOnlyTransformLogGroup",
+      "Effect": "Allow",
+      "Action": "logs:CreateLogGroup",
+      "Resource": [
+        "arn:aws:logs:us-west-2:803964124311:log-group:/aws/lambda/tcss562-sync-transform",
+        "arn:aws:logs:us-west-2:803964124311:log-group:/aws/lambda/tcss562-sync-transform:*"
+      ]
+    },
+    {
+      "Sid": "ManageOnlyTransformLogRetention",
+      "Effect": "Allow",
+      "Action": [
+        "logs:PutRetentionPolicy"
+      ],
+      "Resource": "arn:aws:logs:us-west-2:803964124311:log-group:/aws/lambda/tcss562-sync-transform:*"
+    },
+    {
+      "Sid": "ReadOnlyTransformLogGroup",
+      "Effect": "Allow",
+      "Action": [
+        "logs:DescribeLogStreams",
+        "logs:FilterLogEvents"
+      ],
+      "Resource": "arn:aws:logs:us-west-2:803964124311:log-group:/aws/lambda/tcss562-sync-transform:*"
+    },
+    {
+      "Sid": "ReadOnlyTransformLogStreams",
+      "Effect": "Allow",
+      "Action": "logs:GetLogEvents",
+      "Resource": "arn:aws:logs:us-west-2:803964124311:log-group:/aws/lambda/tcss562-sync-transform:log-stream:*"
+    }
+  ]
+}
